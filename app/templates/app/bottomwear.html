@@ -1,0 +1,30 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Bottom Wear{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+  <h3 class="mb-4 text-center">All Bottom Wear</h3>
+  <div class="row">
+    {% for product in bottomwears %}
+    <div class="col-md-4 col-sm-6 mb-4">
+      <div class="card h-100 shadow-sm border-0">
+        <a href="{% url 'product-detail' product.id %}" class="text-decoration-none text-dark">
+          <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.title }}" height="250">
+          <div class="card-body">
+            <h6 class="card-title fw-bold">{{ product.title }}</h6>
+            <p class="mb-1 text-success">₹{{ product.discounted_price }}</p>
+            <small class="text-muted text-decoration-line-through">₹{{ product.selling_price }}</small>
+          </div>
+        </a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <p class="text-center">No bottomwears available.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock main-content %}

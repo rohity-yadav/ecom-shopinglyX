@@ -1,0 +1,59 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Login{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3">
+      <div class="shadow p-4 rounded bg-light">
+        <h3 class="text-center mb-4">Customer Login</h3>
+        <hr>
+
+        <!-- Messages -->
+        {% if messages %}
+          {% for message in messages %}
+            <p class="alert alert-{{ message.tags }}">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Login Form -->
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% for field in form %}
+            <div class="form-group mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              <small class="text-danger">{{ field.errors|striptags }}</small>
+            </div>
+          {% endfor %}
+
+          <!-- Forgot password left aligned -->
+          <div class="mb-2">
+            <a href="{% url 'password_reset' %}" class="text-danger small">Forgot Password?</a>
+          </div>
+
+          <!-- Login button below the link -->
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+
+          <div class="text-center mt-3 text-primary fw-bold">
+            <small>New User? 
+              <a href="{% url 'customerregistration' %}" class="text-danger">Register Here</a>
+            </small>
+          </div>
+
+          {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+              <p class="alert alert-danger mt-3">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main-content %}

@@ -1,0 +1,49 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}All Watches{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+  <div class="row">
+    
+    <!-- Sidebar Filters -->
+    <div class="col-sm-3">
+      <div class="list-group">
+        <h5 class="mb-3">Filter by Brand</h5>
+        <a href="{% url 'watch' %}" class="list-group-item list-group-item-action">All Watches</a>
+        <a href="{% url 'watchdata' 'Boat' %}" class="list-group-item list-group-item-action">Boat</a>
+        <a href="{% url 'watchdata' 'Titan' %}" class="list-group-item list-group-item-action">Titan</a>
+
+        <h5 class="my-3">Filter by Price</h5>
+        <a href="{% url 'watchdata' 'below' %}" class="list-group-item list-group-item-action">Below ₹1000</a>
+        <a href="{% url 'watchdata' 'above' %}" class="list-group-item list-group-item-action">Above ₹3000</a>
+      </div>
+    </div>
+    
+<div class="col-sm-9">
+      <div class="row">
+        {% for product in watches  %}
+        <div class="col-md-4 col-sm-6 mb-4">
+          <div class="card h-100 shadow-sm border-0">
+            <a href="{% url 'product-detail' product.id %}" class="text-decoration-none text-dark">
+              <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.title }}" height="250">
+              <div class="card-body">
+                <h6 class="card-title fw-bold">{{ product.title }}</h6>
+                <p class="mb-1 text-success">₹{{ product.discounted_price }}</p>
+                <small class="text-muted text-decoration-line-through">₹{{ product.selling_price }}</small>
+              </div>
+            </a>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <p class="text-center">No mobiles found in this filter.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock main-content %}

@@ -1,0 +1,59 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Cart{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+  <div class="row">
+    <h3 class="text-center mb-4">Your Cart</h3>
+    {% if cart %}
+      <div class="col-sm-8">
+        {% for item in cart %}
+          <div class="row mb-4" id="cart-item-{{ item.product.id }}">
+            <div class="col-sm-3 text-center align-self-center">
+              <img src="{{ item.product.product_image.url }}" alt="{{ item.product.title }}" class="img-fluid img-thumbnail shadow-sm" height="150" width="150">
+            </div>
+            <div class="col-sm-9">
+              <div>
+                <h5>{{ item.product.title }}</h5>
+                <p class="mb-1"><strong>Brand:</strong> {{ item.product.brand }}</p>
+                <!-- <p class="mb-1"><strong>Category:</strong> {{ item.product.category }}</p> -->
+                <p class="mb-1"><strong> Size:</strong> {{ item.size }}</p>
+                <p class="mb-1"><strong>Quantity:</strong> 
+                  <button class="btn btn-sm btn-warning minus-cart" pid="{{ item.product.id }}">-</button>
+                  <span class="px-2">{{ item.quantity }}</span>
+                  <button class="btn btn-sm btn-success plus-cart" pid="{{ item.product.id }}">+</button>
+
+                </p>
+                <p class="mb-1"><strong>Discounted-Price:</strong> ₹{{ item.product.discounted_price }}</p>
+
+                <div class="mt-2">
+                  <button class="btn btn-sm btn-danger remove-cart" pid="{{ item.product.id }}">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Total Amount</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><strong>Amount:</strong> ₹<span id="amount">{{ amount }}</span></li>
+              <li class="list-group-item"><strong>Shipping:</strong> ₹{{ shipping_amount }}</li>
+              <li class="list-group-item"><strong>Total:</strong> ₹<span id="totalamount">{{ totalamount }}</span></li>
+            </ul>
+            <div class="d-grid mt-3">
+              <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Payment</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-center text-danger">Your cart is empty.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock main-content %}

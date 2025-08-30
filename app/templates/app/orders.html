@@ -1,0 +1,56 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}My Orders{% endblock title %}
+{% block main-content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+
+
+<div class="container my-5">
+  <h2 class="text-center mb-4">My Orders</h2>
+  {% for order in orders %}
+  <div class="row mb-4 shadow-sm border rounded p-3">
+    <div class="col-sm-3 text-center align-self-center">
+      <img src="{{ order.product.product_image.url }}" class="img-fluid img-thumbnail" width="180" height="180">
+    </div>
+    <div class="col-sm-9">
+      <h5>{{ order.product.title }}</h5>
+      <p>{{ order.product.description }}</p>
+      <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+      <p><strong>Price:</strong> ₹{{ order.product.discounted_price }}</p>
+      <p><strong>Order Date:</strong> {{ order.ordered_date|date:"d M Y, h:i A" }}</p>
+      <p><strong>Status:</strong>
+        {% if order.status == 'Pending' %}
+    <span class="badge bg-warning text-dark">Pending</span>
+    <form method="post" action="{% url 'cancel_order' order.id %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger ms-2">Cancel Order</button>
+    </form>
+{% elif order.status == 'Accepted' %}
+    <span class="badge bg-primary">Accepted</span>
+{% elif order.status == 'Packed' %}
+    <span class="badge bg-info text-dark">Packed</span>
+{% elif order.status == 'On The Way' %}
+    <span class="badge bg-purple" style="background-color: purple;">On The Way</span>
+{% elif order.status == 'Delivered' %}
+    <span class="badge bg-success">Delivered</span>
+{% elif order.status == 'Cancelled' %}
+    <span class="badge bg-danger">Cancelled</span>
+{% endif %}
+
+      </p>
+    </div>
+  </div>
+  {% empty %}
+  <h5 class="text-center text-danger">You haven't placed any orders yet.</h5>
+  {% endfor %}
+</div>
+
+{% endblock main-content %}

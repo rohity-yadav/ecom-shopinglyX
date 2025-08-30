@@ -1,0 +1,90 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Checkout{% endblock title %}
+{% block main-content %}
+
+<div class="container my-5">
+  <div class="row">
+    <!-- LEFT: Cart Summary -->
+    <div class="col-sm-6">
+      <h4>Order Summary</h4>
+      <hr>
+      {% for item in items %}
+      <div class="card mb-2">
+        <div class="card-body">
+          <h5>Product: {{ item.product.title }}</h5>
+          <p>Size: <strong>{{ item.selected_size }}</strong></p> <!-- ✅ SIZE SHOWN HERE -->
+          <p>Quantity: {{ item.quantity }}</p>
+          <p class="fw-bold">Price: ₹{{ item.product.discounted_price }}</p>
+        </div>
+      </div>
+      {% endfor %}
+      <hr>
+      <h5>Total: ₹{{ amount }}</h5>
+      <h5>Shipping: ₹30.00</h5>
+      <h4><strong>Grand Total: ₹{{ totalamount }}</strong></h4>
+    </div>
+
+    <!-- RIGHT: Select Address & Payment -->
+    <div class="col-sm-5 offset-sm-1">
+      <h4>Select Shipping Address</h4>
+      <hr>
+      <form method="post" id="payment-form">
+        {% csrf_token %}
+        {% for addr in addresses %}
+        <div class="card mb-2">
+          <div class="card-body">
+            <h5>{{ addr.name }}</h5>
+            <p>{{ addr.locality }}, {{ addr.city }} - {{ addr.zipcode }}</p>
+            <input type="radio" name="custid" value="{{ addr.id }}" required> Use this address
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-danger">No saved addresses found. Please add one.</p>
+        {% endfor %}
+
+        <!-- Razorpay Button -->
+        <div class="text-end">
+          <button type="submit" id="rzp-button" class="btn btn-warning px-4 mt-3 fw-bold">Pay with Razorpay</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock main-content %}
+
+{% block payment-gateway %}
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+    "key": "{{ razorpay_key_id }}",
+    "amount": "{{ razoramount }}",
+    "currency": "INR",
+    "name": "My Store",
+    "description": "Product Purchase",
+    "order_id": "{{ order_id }}",
+    "handler": function (response) {
+      var selectedAddress = document.querySelector('input[name="custid"]:checked');
+      var custId = selectedAddress ? selectedAddress.value : null;
+
+      if (!custId) {
+        alert("Please select an address before payment.");
+        return;
+      }
+
+      window.location.href = `/paymentdone?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&cust_id=${custId}`;
+    },
+    "theme": {
+      "color": "#3399cc"
+    }
+  };
+
+  var rzp = new Razorpay(options);
+  document.getElementById('rzp-button').onclick = function (e) {
+    e.preventDefault();
+    rzp.open();
+  }
+</script>
+{% endblock payment-gateway %}
